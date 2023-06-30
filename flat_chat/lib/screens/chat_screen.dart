@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flat_chat/constants.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
-
   static String id = 'chat_screen';
 
   @override
@@ -10,6 +11,30 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final _auth = FirebaseAuth.instance;
+  final _fireStore = FirebaseFirestore.instance;
+  String messageText = '';
+  User? loggedInUser;
+  final CollectionReference collectionReference =
+      FirebaseFirestore.instance.collection('messages');
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      User user = await _auth.currentUser!;
+      if (user != null) {
+        loggedInUser = user;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +44,8 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
               icon: Icon(Icons.close),
               onPressed: () {
-                //Implement logout functionality
+                _auth.signOut();
+                Navigator.pop(context);
               }),
         ],
         title: Text('⚡️Chat'),
@@ -38,14 +64,24 @@ class _ChatScreenState extends State<ChatScreen> {
                   Expanded(
                     child: TextField(
                       onChanged: (value) {
-                        //Do something with the user input.
+                        setState(() {
+                          messageText = value;
+                        });
                       },
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      //Implement send functionality.
+                    onPressed: () async {
+                      try {
+                        await collectionReference.add({
+                          "text": messageText,
+                          "sender": loggedInUser?.email
+                        });
+                        print('Data added successfully');
+                      } catch (e) {
+                        print('Error adding data: $e');
+                      }
                     },
                     child: Text(
                       'Send',
