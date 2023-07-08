@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todoey/models/task_data.dart';
 import 'package:todoey/screens/add_task_screen.dart';
 import 'package:todoey/widgets/tasks_list.dart';
 
-class TaskScreen extends StatelessWidget {
+class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
+
+  @override
+  State<TaskScreen> createState() => _TaskScreenState();
+}
+
+class _TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -13,11 +21,12 @@ class TaskScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.only(top: 60, right: 30, left: 30, bottom: 30),
+            padding:
+            const EdgeInsets.only(top: 60, right: 30, left: 30, bottom: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 30,
                   child: Icon(
@@ -26,10 +35,10 @@ class TaskScreen extends StatelessWidget {
                     color: Colors.lightBlueAccent,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                Text(
+                const Text(
                   "Todoey",
                   style: TextStyle(
                       color: Colors.white,
@@ -37,40 +46,37 @@ class TaskScreen extends StatelessWidget {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  '12 tasks',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  '${Provider
+                      .of<TaskData>(context)
+                      .taskCount} tasks',
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ],
             ),
           ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20))),
-              child: TasksList(),
+              child: const TasksList(),
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        backgroundColor: Colors.lightBlueAccent,
+        child: const Icon(Icons.add),
         onPressed: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (context) => SingleChildScrollView(
-                child: Container(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: AddTaskScreen(),
-            )),
+            builder: (context) => const AddTaskScreen()
           );
         },
-        backgroundColor: Colors.lightBlueAccent,
       ),
     );
   }
