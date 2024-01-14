@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:meals/models/meal.dart';
-import 'package:meals/screens/cagegories.dart';
-import 'package:meals/screens/meals.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TabsScreen extends StatefulWidget {
+import 'package:meals/providers/filter_provider.dart';
+import 'package:meals/screens/cagegories.dart';
+import 'package:meals/screens/filters.dart';
+import 'package:meals/screens/meals.dart';
+import 'package:meals/widgets/main_drawer.dart';
+import 'package:meals/providers/favorites_provider.dart';
+
+class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
 
   @override
-  State<TabsScreen> createState() => _TabsScreenState();
+  ConsumerState<TabsScreen> createState() => _TabsScreenState();
 }
 
-class _TabsScreenState extends State<TabsScreen> {
+class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _selectedPageIndex = 0;
-  final List<Meal> _favoriteMeals = [];
-
-  void _toggleMealFavoriteStatus(Meal meal) {
-    final isExisting = _favoriteMeals.contains(meal);
-    if (isExisting) {
-      _favoriteMeals.remove(meal);
-    } else {
-      _favoriteMeals.add(meal);
-    }
-  }
 
   void _selectPage(int index) {
     setState(() {
@@ -29,19 +24,36 @@ class _TabsScreenState extends State<TabsScreen> {
     });
   }
 
+  void _setScreen(String identifier) {
+    Navigator.of(context).pop();
+
+    if (identifier == "filters") {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (ctx) => const FilterScreen()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget activatePage = const CategoriesScreen();
+    final availableMeals = ref.watch(filteredMealsProvider);
+
+    Widget activatePage = CategoriesScreen(availableMeals: availableMeals);
     var activatePageTitle = "Categories";
 
     if (_selectedPageIndex == 1) {
-      activatePage = const MealsScreen(meals: []);
+      final favoriteMeals = ref.watch(favoriteMealsProvider);
+      activatePage = MealsScreen(
+        meals: favoriteMeals,
+      );
       activatePageTitle = "Your Favorite";
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(activatePageTitle),
+      ),
+      drawer: MainDrawer(
+        onSelectScreen: _setScreen,
       ),
       body: activatePage,
       bottomNavigationBar: BottomNavigationBar(
