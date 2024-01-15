@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/data/categories.dart';
+import 'package:shopping_list/models/category.dart';
+import 'package:shopping_list/models/grocery_item.dart';
 
 class NewGroceryWidget extends StatefulWidget {
   const NewGroceryWidget({super.key});
@@ -10,9 +12,19 @@ class NewGroceryWidget extends StatefulWidget {
 
 class _NewGroceryWidgetState extends State<NewGroceryWidget> {
   final _formKey = GlobalKey<FormState>();
+  var _enteredName = '';
+  var _enteredQuantity = 1;
+  var _selectedCategory = categories[Categories.vegetables]!;
 
   void _saveItem() {
-    _formKey.currentState!.validate();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      Navigator.of(context).pop(GroceryItem(
+          id: DateTime.now().toString(),
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedCategory));
+    }
   }
 
   @override
@@ -28,6 +40,7 @@ class _NewGroceryWidgetState extends State<NewGroceryWidget> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: _enteredName,
                   maxLength: 50,
                   decoration: const InputDecoration(label: Text("Name")),
                   validator: (value) {
@@ -39,6 +52,9 @@ class _NewGroceryWidgetState extends State<NewGroceryWidget> {
                     }
                     return null;
                   },
+                  onSaved: (value) {
+                    _enteredName = value!;
+                  },
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -48,7 +64,7 @@ class _NewGroceryWidgetState extends State<NewGroceryWidget> {
                         keyboardType: TextInputType.number,
                         decoration:
                             const InputDecoration(label: Text('Quantity')),
-                        initialValue: '1',
+                        initialValue: _enteredQuantity.toString(),
                         validator: (value) {
                           if (value == null ||
                               value.isEmpty ||
@@ -58,30 +74,40 @@ class _NewGroceryWidgetState extends State<NewGroceryWidget> {
                           }
                           return null;
                         },
+                        onSaved: (value) {
+                          _enteredQuantity = int.parse(value!);
+                        },
                       ),
                     ),
                     const SizedBox(
                       width: 8,
                     ),
                     Expanded(
-                      child: DropdownButtonFormField(items: [
-                        for (final category in categories.entries)
-                          DropdownMenuItem(
-                              value: category.key,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 16,
-                                    height: 16,
-                                    color: category.value.color,
-                                  ),
-                                  const SizedBox(
-                                    width: 6,
-                                  ),
-                                  Text(category.value.name)
-                                ],
-                              ))
-                      ], onChanged: (value) {}),
+                      child: DropdownButtonFormField(
+                          value: _selectedCategory,
+                          items: [
+                            for (final category in categories.entries)
+                              DropdownMenuItem(
+                                  value: category.value,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 16,
+                                        height: 16,
+                                        color: category.value.color,
+                                      ),
+                                      const SizedBox(
+                                        width: 6,
+                                      ),
+                                      Text(category.value.name)
+                                    ],
+                                  ))
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCategory = value!;
+                            });
+                          }),
                     )
                   ],
                 ),
@@ -91,7 +117,11 @@ class _NewGroceryWidgetState extends State<NewGroceryWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(onPressed: () {_formKey.currentState!.reset();}, child: const Text('Reset')),
+                    TextButton(
+                        onPressed: () {
+                          _formKey.currentState!.reset();
+                        },
+                        child: const Text('Reset')),
                     ElevatedButton(
                         onPressed: _saveItem, child: const Text('Submit'))
                   ],
