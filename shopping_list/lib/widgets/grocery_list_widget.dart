@@ -66,14 +66,9 @@ class _GroceryListWidgetState extends State<GroceryListWidget> {
   }
 
   void _addNewItem(BuildContext context) async {
-    final newItem = await Navigator.of(context).push<GroceryItem>(
+    await Navigator.of(context).push<GroceryItem>(
         MaterialPageRoute(builder: (ctx) => const NewGroceryWidget()));
-    if (newItem == null) return;
-
     _loadItems();
-    setState(() {
-      _groceryItems.add(newItem);
-    });
   }
 
   void _removeNewItem(GroceryItem item) async {

@@ -25,20 +25,26 @@ class _NewGroceryWidgetState extends State<NewGroceryWidget> {
       setState(() {
         _isSending = true;
       });
-      final url = Uri.https(
-          'flutter-prep-1f531-default-rtdb.asia-southeast1.firebasedatabase.app',
-          'shopping-list.json');
-      await http.post(url,
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({
-            "name": _enteredName,
-            "quantity": _enteredQuantity,
-            "category": _selectedCategory
-          }));
-      if (!context.mounted) {
-        return;
+      try {
+        final url = Uri.https(
+            'flutter-prep-1f531-default-rtdb.asia-southeast1.firebasedatabase.app',
+            'shopping-list.json');
+        await http.post(url,
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              "name": _enteredName,
+              "quantity": _enteredQuantity,
+              "category": _selectedCategory.name
+            }));
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.of(context).pop();
+      } catch (error) {
+        setState(() {
+          _isSending = false;
+        });
       }
-      Navigator.of(context).pop();
     }
   }
 
