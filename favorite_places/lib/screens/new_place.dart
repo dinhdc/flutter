@@ -1,5 +1,6 @@
 import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/providers/places_provider.dart';
+import 'package:favorite_places/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,6 +43,10 @@ class _NewPlaceScreenState extends ConsumerState<NewPlaceScreen> {
             decoration: const InputDecoration(
                 label: Text('Title'), fillColor: Colors.white),
           ),
+          const SizedBox(
+            height: 20,
+          ),
+          const ImageInput(),
           const SizedBox(
             height: 20,
           ),

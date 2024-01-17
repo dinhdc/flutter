@@ -1,4 +1,3 @@
-import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/providers/places_provider.dart';
 import 'package:favorite_places/screens/new_place.dart';
 import 'package:favorite_places/screens/place_detail.dart';
