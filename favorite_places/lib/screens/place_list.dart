@@ -38,6 +38,11 @@ class PlaceListScreen extends ConsumerWidget {
                   .textTheme
                   .titleMedium!
                   .copyWith(color: Theme.of(context).colorScheme.onBackground)),
+          subtitle: Text(myPlaces[index].location.address,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall!
+                  .copyWith(color: Theme.of(context).colorScheme.onBackground)),
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (ctx) => PlaceDetailScreen(place: myPlaces[index])));
