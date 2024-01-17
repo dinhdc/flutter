@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/providers/places_provider.dart';
 import 'package:favorite_places/widgets/image_input.dart';
@@ -13,6 +15,7 @@ class NewPlaceScreen extends ConsumerStatefulWidget {
 
 class _NewPlaceScreenState extends ConsumerState<NewPlaceScreen> {
   final TextEditingController _titleController = TextEditingController();
+  File? _selectedImage;
 
   @override
   void dispose() {
@@ -20,16 +23,18 @@ class _NewPlaceScreenState extends ConsumerState<NewPlaceScreen> {
     _titleController.dispose();
   }
 
+  void addNewPlace() {
+    final name = _titleController.value.text.trim();
+    if (name.isNotEmpty && _selectedImage != null) {
+      ref
+          .read(placeListNotifier.notifier)
+          .addNewPlace(Place(name: name, image: _selectedImage!));
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    void addNewPlace() {
-      final name = _titleController.value.text.trim();
-      if (name.isNotEmpty) {
-        ref.read(placeListNotifier.notifier).addNewPlace(Place(name: name));
-        Navigator.of(context).pop();
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add new Place'),
@@ -46,7 +51,11 @@ class _NewPlaceScreenState extends ConsumerState<NewPlaceScreen> {
           const SizedBox(
             height: 20,
           ),
-          const ImageInput(),
+          ImageInput(
+            onPickImage: (image) {
+              _selectedImage = image;
+            },
+          ),
           const SizedBox(
             height: 20,
           ),

@@ -29,6 +29,10 @@ class PlaceListScreen extends ConsumerWidget {
     if (myPlaces.isNotEmpty) {
       content = ListView.builder(
         itemBuilder: (ctx, index) => ListTile(
+          leading: CircleAvatar(
+            radius: 26,
+            backgroundImage: FileImage(myPlaces[index].image),
+          ),
           title: Text(myPlaces[index].name,
               style: Theme.of(context)
                   .textTheme
@@ -54,7 +58,10 @@ class PlaceListScreen extends ConsumerWidget {
               icon: const Icon(Icons.add))
         ],
       ),
-      body: content,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: content,
+      ),
     );
   }
 }
